@@ -41,6 +41,7 @@ class QualityPoint(models.Model):
         :return: the domain for quality point with given picking_type_id for all the product_ids
         :rtype: list
         """
+        
         domain = [('picking_type_ids', 'in', picking_type_id.ids)]
         domain_in_products_or_categs = ['|', ('product_ids', 'in', product_ids.ids), ('product_category_ids', 'parent_of', product_ids.categ_id.ids)]
         domain_no_products_and_categs = [('product_ids', '=', False), ('product_category_ids', '=', False)]
@@ -48,7 +49,7 @@ class QualityPoint(models.Model):
         domain += [('measure_on', '=', measure_on)]
 
         #CFS ticket 744 Quality Clause. Add clauses from product template and PO lines
-        domain += ['|', (self.quality_clause, 'in', product_ids.quality_clauses), (self.quality_clause, '=', False)]
-        #domain = False #used this to test that my changes were not active
+        domain += ['|', (self.quality_clause.id, 'in', product_ids.quality_clauses.ids), (self.quality_clause, '=', False)]
+        #raise UserError(domain) #picking_type_ids,in,,|,|,product_ids,in,,product_category_ids,parent_of,,&,product_ids,=,false,product_category_ids,=,false,measure_on,=,product,|,quality.clause(),in,quality.clause(),quality.clause(),=,false
 
         return domain
