@@ -47,9 +47,11 @@ class QualityPoint(models.Model):
         domain_no_products_and_categs = [('product_ids', '=', False), ('product_category_ids', '=', False)]
         domain += OR([domain_in_products_or_categs, domain_no_products_and_categs])
         domain += [('measure_on', '=', measure_on)]
-
+        
         #CFS ticket 744 Quality Clause. Add clauses from product template and PO lines
-        domain += ['|', (self.quality_clause.id, 'in', product_ids.quality_clauses.ids), (self.quality_clause, '=', False)]
-        #raise UserError(domain) #picking_type_ids,in,,|,|,product_ids,in,,product_category_ids,parent_of,,&,product_ids,=,false,product_category_ids,=,false,measure_on,=,product,|,quality.clause(),in,quality.clause(),quality.clause(),=,false
+        #domain += ['|', ('quality_clause', 'in', product_ids.quality_clauses.ids), ('quality_clause', '=', False)]
+        #domain += ['&', ('quality_clause', 'in', product_ids.quality_clauses.ids), ('quality_clause', '!=', False)]
+        #raise UserError(str(self.id) + '\n' + str(product_ids) + '\n' + str(picking_type_id) + '\n' + str(measure_on))
+        #domain = [('product_ids', '=', '1')] #can use this to block all of them
 
         return domain
