@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo><data>
+    <record id="purchase_order_form_quality_clause" model="ir.ui.view">
+        <field name="name">purchase.order.inherited.form.quality.clause</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_ref']" position="after">
+                <field name="quality_clauses" widget="many2many_tags"/>
+            </xpath>
+            <xpath expr="//form[1]/sheet[1]/notebook[1]/page[@name='products']/field[@name='order_line']/tree[1]/field[@name='name']" position="after">
+                <field optional="show" widget="many2many_tags" name="quality_clauses"/>
+            </xpath>
+        </field>
+    </record>
+</data></odoo>

@@ -7,7 +7,7 @@
     'category': 'Manufacturing/Quality',
     'sequence': 50,
     'summary': 'Customization to Quality module',
-    'depends': ['stock','quality','quality_control'],
+    'depends': ['stock','purchase','purchase_stock','quality','quality_control'],
     'description': """
 Quality 
 ===============
@@ -16,7 +16,8 @@ Quality
         'security/ir.model.access.csv',
         'views/quality_clause.xml',
         'views/quality_point.xml',
-        'views/product_template.xml'
+        'views/product_template.xml',
+        'views/purchase_order.xml'
     ],
     'demo': [],
     'application': False,

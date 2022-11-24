@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+import logging
 import ast
 
 from datetime import datetime
@@ -9,17 +10,33 @@ from odoo import api, fields, models, _, SUPERUSER_ID
 from odoo.exceptions import UserError
 from odoo.osv.expression import OR
 
+_logger = logging.getLogger(__name__)
+
 class QualityClause(models.Model):
     _name = "quality.clause"
-    #this object should be existing in another module, don't need to create it.
+    
     name = fields.Char(string='Name', required=False)
     description = fields.Char(string='Description', required=False)
     details = fields.Text(string='Details', required=False)
 
 class ProductTemplate(models.Model):
     _inherit = "product.template"
-    #is this field already existing?
+    
     quality_clauses = fields.Many2many(comodel_name="quality.clause", string="Quality Clause")
+
+class PurchaseOrder(models.Model):
+    _inherit = 'purchase.order'
+    
+    quality_clauses = fields.Many2many(comodel_name="quality.clause", string="Quality Clause")
+
+class PurchaseOrderLine(models.Model):
+    _inherit = 'purchase.order.line'
+    
+    quality_clauses = fields.Many2many(comodel_name="quality.clause", string="Quality Clause")
+
+    def create(self, vals_list):
+        #add parent value of quality clauses, add product value of quality clauses
+        return super(PurchaseOrderLine, self).create(vals_list)
 
 class QualityPoint(models.Model):
     _inherit = "quality.point"
@@ -47,11 +64,30 @@ class QualityPoint(models.Model):
         domain_no_products_and_categs = [('product_ids', '=', False), ('product_category_ids', '=', False)]
         domain += OR([domain_in_products_or_categs, domain_no_products_and_categs])
         domain += [('measure_on', '=', measure_on)]
-        
-        #CFS ticket 744 Quality Clause. Add clauses from product template and PO lines
-        #domain += ['|', ('quality_clause', 'in', product_ids.quality_clauses.ids), ('quality_clause', '=', False)]
-        #domain += ['&', ('quality_clause', 'in', product_ids.quality_clauses.ids), ('quality_clause', '!=', False)]
-        #raise UserError(str(self.id) + '\n' + str(product_ids) + '\n' + str(picking_type_id) + '\n' + str(measure_on))
-        #domain = [('product_ids', '=', '1')] #can use this to block all of them
+        #CFS Ticket
+        domain += [('quality_clause', '=', False)]
 
         return domain
+
+class StockMoveLine(models.Model):
+    _inherit = "stock.move.line"
+
+    @api.model
+    def create(self, vals_list):
+        mls = super(StockMoveLine, self).create(vals_list)
+        mls._filter_move_lines_applicable_for_quality_check()._create_check()
+
+        #CFS Ticket
+        for ml in mls:
+            ml_clauses = ml.move_id.purchase_line_id.quality_clauses
+            if ml_clauses:
+                quality_points = self.env['quality.point'].sudo().search([('quality_clause','in', ml_clauses.ids)])
+                check_values_list = []
+                for quality_point in quality_points:
+                    if quality_point.check_execute_now():
+                        check_values = ml._get_check_values(quality_point)
+                        check_values_list.append(check_values)
+                if check_values_list:
+                    self.env['quality.check'].sudo().create(check_values_list)
+
+        return mls
