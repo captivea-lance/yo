@@ -11,6 +11,9 @@
             <xpath expr="//form//tree/field[@name='margin']" position="attributes">
                 <attribute name="decoration-danger">margin&lt;=0</attribute>
             </xpath>
+            <xpath expr="//form/sheet//group[@name='note_group']//field[@name='margin']" position="attributes">
+                <attribute name="decoration-danger">margin&lt;=0</attribute>
+            </xpath>
         </field>
     </record>
 </odoo>

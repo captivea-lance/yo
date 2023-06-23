@@ -39,12 +39,12 @@ class SaleOrderLine(models.Model):
                 candidates = self.env['stock.valuation.layer'].sudo().search(domain, order='id desc')
                 sum_remaining_value = 0
                 remaining_qty = qty_to_take_on_candidates
-                if candidates:
+                if candidates and remaining_qty:
                     candidate_unit_cost = 0
                     for candidate in candidates:
-                        _logger.info(f'\n\n\n sum {sum_remaining_value} remaining_qty {remaining_qty}')
                         #set unit cost here to take the latest value
-                        if not candidate_unit_cost: candidate_unit_cost = candidate.remaining_value / candidate.remaining_qty
+                        if not candidate_unit_cost: 
+                            candidate_unit_cost = candidate.remaining_value / candidate.remaining_qty
                         if remaining_qty > 0:
                             if candidate.remaining_qty > remaining_qty:
                                 sum_remaining_value += candidate.remaining_value
