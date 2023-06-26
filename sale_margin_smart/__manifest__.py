@@ -9,7 +9,8 @@
     'summary': 'Customization to Margin Calculation',
     'depends': ['sale_margin','stock_account','sale'],
     'description': """
-Quality 
+This module will look up items in the reverse order if they are FIFO valued, giving you the latest cost data instead of the earliest.
+Sale order lines that do not yield a postive margin are flagged as red. 
 ===============
 """,
     'data': [
