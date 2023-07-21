@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="view_smart_margin" model="ir.ui.view">
-        <field name="name">view_smart_margin</field>
+    <record id="view_cap_sale" model="ir.ui.view">
+        <field name="name">view_cap_sale</field>
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form" />
         <field name="arch" type="xml">
+            <xpath expr="//field[@name='date_order'][2]" position="after">
+                <field name="client_order_ref"/>
+                <field name="client_req_date"/>
+                <field name="commitment_date"/>
+                <field name="shipping_notes"/>
+            </xpath>
             <xpath expr="//form//tree/field[@name='margin_percent']" position="attributes">
                 <attribute name="decoration-danger">margin_percent&lt;=0</attribute>
             </xpath>
