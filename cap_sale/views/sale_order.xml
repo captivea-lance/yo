@@ -7,6 +7,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='date_order'][2]" position="after">
                 <field name="client_order_ref"/>
+                <field name="so_tracking_number"/>
                 <field name="client_req_date"/>
                 <field name="commitment_date"/>
                 <field name="shipping_notes"/>

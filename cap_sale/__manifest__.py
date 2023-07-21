@@ -7,7 +7,7 @@
     'category': 'Sales',
     'sequence': 50,
     'summary': 'Changes to Sales App',
-    'depends': ['sale_margin','stock_account','sale','sale_stock'],
+    'depends': ['sale_margin','stock_account','sale','sale_stock','delivery'],
     'description': """
 Container module for extensions to Odoo Sales.
 """,

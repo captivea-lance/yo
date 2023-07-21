@@ -22,3 +22,18 @@ class SaleOrder(models.Model):
         string="Shipping Notes",
         help="These notes will be passed onto created Transfers."
     )
+
+    so_tracking_number = fields.Text(
+        string="Tracking Number",
+        compute='_compute_so_tracking_number',
+        store=False,
+        help="Tracking numbers found on transfers"
+    )
+    @api.depends('picking_ids')
+    def _compute_so_tracking_number(self):
+        for rec in self:
+            picking_ids = rec.picking_ids.filtered(lambda x: x.picking_type_id.code == 'outgoing' and x.carrier_tracking_ref)
+            if picking_ids:
+                rec.so_tracking_number = ', '.join(picking_ids.mapped("carrier_tracking_ref"))
+            else:
+                rec.so_tracking_number = False
